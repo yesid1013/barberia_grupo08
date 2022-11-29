@@ -43,10 +43,10 @@ public class BarberoController {
     public ResponseEntity <Message> update(@RequestBody Barbero barbero){
         try {
             Message message=barberoService.update(barbero);
-            return new ResponseEntity<Message>(new Message(message.getStatus(),message.getMessage()), HttpStatus.valueOf(message.getStatus()));
-            
+            //return new ResponseEntity<Message>(new Message(message.getStatus(),message.getMessage()), HttpStatus.valueOf(message.getStatus()));
+            return new ResponseEntity<>(message,HttpStatus.resolve(message.getStatus()));
         } catch (Exception e) {
-            return new ResponseEntity<Message>(new Message(400,"Los datos ingresados no son correctos"),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Message>(new Message(400,"Ha ocurrido un error "+e),HttpStatus.BAD_REQUEST);
         }
         
     }

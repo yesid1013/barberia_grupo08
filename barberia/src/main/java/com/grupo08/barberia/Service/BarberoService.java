@@ -33,12 +33,15 @@ public class BarberoService {
     }
 
     public Message update(Barbero barbero){
-        barbero=barberoRepository.findById(barbero.getId_barbero()).get();
-        if (barbero==null){
-            return new Message(404, "Barbero no encontrado");
-        }else{
+        
+        try {
+            barberoRepository.findById(barbero.getId_barbero()).get();
             return new Message(200, "Encontrado");
+            
+        } catch (Exception e) {
+            return new Message(404, "Barbero no encontrado");
         }
+        
         
     }
 }
