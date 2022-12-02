@@ -1,12 +1,17 @@
 package com.grupo08.barberia.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,11 +23,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.grupo08.barberia.DTO.ClienteDTO;
+import com.grupo08.barberia.DTO.CrearClienteDTO;
 import com.grupo08.barberia.DTO.CredencialesDTO;
 import com.grupo08.barberia.Entity.Cliente;
+import com.grupo08.barberia.Entity.ERol;
 import com.grupo08.barberia.Entity.Message;
+import com.grupo08.barberia.Entity.Role;
+import com.grupo08.barberia.Exception.Exception.InvalidDataException;
 import com.grupo08.barberia.Security.Hash;
 import com.grupo08.barberia.Service.ClienteService;
+import com.grupo08.barberia.Service.RoleService;
 import com.grupo08.barberia.Utility.ConvertEntity;
 
 
@@ -35,6 +45,9 @@ public class ClienteController {
 
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    RoleService roleService;
 
     ConvertEntity convertEntity = new ConvertEntity();
 
@@ -64,13 +77,46 @@ public class ClienteController {
     }
 
     @PostMapping("/crear")
-    public ResponseEntity <Message> save(@RequestBody Cliente cliente,@RequestHeader String user, @RequestHeader String key){
+    public ResponseEntity <Message> save(@Valid @RequestBody CrearClienteDTO cliente,BindingResult result, @RequestHeader String user, @RequestHeader String key){
+        if(result.hasErrors()){
+            throw new InvalidDataException("Error de datos",result);
+        }
+        if(clienteService.validarUsuarioAdmin(user, key)==false){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        Set<String> strRoles = cliente.getRoles();
+        Set<Role> roles = new HashSet<>();
+        if (strRoles==null) {//Si no manda roles se le agrega el rol user por defecto
+            Role rol = roleService.findByNombre(ERol.ROLE_USER).get();
+            roles.add(rol); 
+        } else {
+            strRoles.forEach(role->{
+                switch(role){
+                case "admin":
+                Role rolAdmin = roleService.findByNombre(ERol.ROLE_ADMIN).get();
+                roles.add(rolAdmin);
+                break;
+                case "user":
+                Role rolUser = roleService.findByNombre(ERol.ROLE_USER).get();
+                roles.add(rolUser);
+                break;
+                case "barber":
+                Role rolBarber = roleService.findByNombre(ERol.ROLE_BARBER).get();
+                roles.add(rolBarber); 
+                break; 
+                }
+            });
+            
+        }
+        Cliente clienteSave = (Cliente) convertEntity.convert(cliente, new Cliente());
+        clienteSave.setRoles(roles);
+        
         if (!clienteService.validarCredenciales(user, key)) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
          }
         try {
-            cliente.setPassword(Hash.sha1(cliente.getPassword())); //encriptar contraseña
-            clienteService.save(cliente);
+            clienteSave.setPassword(Hash.sha1(cliente.getPassword())); //encriptar contraseña
+            clienteService.save(clienteSave);
             return new ResponseEntity<Message>(new Message(201,"Registro creado"), HttpStatus.CREATED);
             
         } catch (Exception e) {
@@ -108,8 +154,8 @@ public class ClienteController {
         }else{
             return new ResponseEntity<>(new Message(401,"Error de credenciales"),HttpStatus.UNAUTHORIZED);
         }
-        
     }
 
+    
 
 }

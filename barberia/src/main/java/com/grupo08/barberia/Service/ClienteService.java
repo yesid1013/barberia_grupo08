@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.grupo08.barberia.Entity.Cliente;
 import com.grupo08.barberia.Entity.Message;
+import com.grupo08.barberia.Entity.Role;
 import com.grupo08.barberia.Repository.ClieneRepository;
 import com.grupo08.barberia.Security.Hash;
 
@@ -71,5 +72,26 @@ public class ClienteService {
             }   
             
         }
+    }
+    public boolean validarUsuarioAdmin(String user, String key){ //Verificar si el usuario tiene el rol admin
+        Cliente cliente = clieneRepository.findByUsername(user);
+        if (!validarCredenciales(user, key)) {
+            return false;
+         }
+        try {
+            int cantidad=0;
+            for (Role role : cliente.getRoles()) {
+                if(role.getNombre().toString().equals("ROLE_ADMIN")){
+                    cantidad++;
+                }  
+            }
+            if(cantidad==0){
+                return false;
+            }
+
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 }

@@ -1,5 +1,9 @@
 package com.grupo08.barberia.DTO;
 
+import java.util.List;
+
+import com.grupo08.barberia.Entity.Role;
+
 import lombok.Data;
 
 @Data
@@ -10,4 +14,5 @@ public class ClienteDTO {
     private String nombre_cliente;
     private String apellido_cliente;
     private String username;
+    private List<Role> roles;
 }
