@@ -9,7 +9,12 @@ const Menu = () => {
           swal("Acceso no autoriazdo","Debe digitar credenciales","error"); 
           navigate('/');
         }
-      },[])
+      },[]);
+
+      const cerrarSesion = () =>{
+        sessionStorage.clear();
+        navigate('/');
+      }
 
     return ( <><nav className="navbar navbar-expand-lg navbar-light bg-light">
     <div className="container-fluid">
@@ -26,7 +31,7 @@ const Menu = () => {
             <a className="nav-link" href="#">Citas</a>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#">Cerrar sesión</a>
+            <a className="nav-link" onClick={cerrarSesion}>Cerrar sesión</a>
           </li>
           
         </ul>

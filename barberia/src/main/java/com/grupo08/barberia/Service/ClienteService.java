@@ -59,6 +59,12 @@ public class ClienteService {
         return clieneRepository.findByUsername(user);
     }
 
+    public Cliente findById(String id){
+        return clieneRepository.findById(id).get();
+    }
+
+
+
     public Boolean validarCredenciales(String user,String key){
         Cliente clienteC=clieneRepository.findByUsername(user);
         if (clienteC==null) {

@@ -133,14 +133,50 @@ public class ClienteController {
         return new ResponseEntity<>(message,HttpStatus.resolve(message.getStatus()));
     }
 
+    @GetMapping("list/{id}")
+    public ClienteDTO findById(@PathVariable String id){
+        ClienteDTO clienteDTO = new ClienteDTO();
+        return (ClienteDTO) convertEntity.convert(clienteService.findById(id),clienteDTO);
+    }
+
     @PutMapping("/actualizar")
-    public ResponseEntity<Message> update(@RequestBody Cliente cliente){
+    public ResponseEntity<Message> update(@RequestBody CrearClienteDTO cliente){
+        Set<String> strRoles = cliente.getRoles();
+        Set<Role> roles = new HashSet<>();
+        if (strRoles==null) {//Si no manda roles se le agrega el rol user por defecto
+            Role rol = roleService.findByNombre(ERol.ROLE_USER).get();
+            roles.add(rol); 
+        } else {
+            strRoles.forEach(role->{
+                switch(role){
+                case "admin":
+                Role rolAdmin = roleService.findByNombre(ERol.ROLE_ADMIN).get();
+                roles.add(rolAdmin);
+                break;
+                case "user":
+                Role rolUser = roleService.findByNombre(ERol.ROLE_USER).get();
+                roles.add(rolUser);
+                break;
+                case "barber":
+                Role rolBarber = roleService.findByNombre(ERol.ROLE_BARBER).get();
+                roles.add(rolBarber); 
+                break; 
+                }
+            });
+            
+        }
+        cliente.setPassword(Hash.sha1(cliente.getPassword()));
+        Cliente clientesave = (Cliente) convertEntity.convert(cliente, new Cliente());
+        clientesave.setRoles(roles);
+        
         try {
-            Message message=clienteService.update(cliente);
+            Message message=clienteService.update(clientesave);
+            
             return new ResponseEntity<Message>(message,HttpStatus.resolve(message.getStatus()));
         } catch (Exception e) {
             return new ResponseEntity<Message>(new Message(400,"Ha ocurrido un error "+e.getMessage()),HttpStatus.BAD_REQUEST);
         }
+        
     }
 
     @GetMapping("/encriptar/{dato}")

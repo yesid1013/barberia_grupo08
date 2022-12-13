@@ -22,7 +22,7 @@ const Login = () => {
                 }
             })
             swal("Acceso exitoso","Bienvenido "+login.data.user,"success")
-            .then((value)=>{
+            .then((value)=>{//Cuando le de ok a la ventana se guardara la sessionstorage con el usuario y la llave
               sessionStorage.setItem("user",login.data.user);
               sessionStorage.setItem("key",login.data.key);
               navigate("/menu");
@@ -41,6 +41,7 @@ const Login = () => {
     return ( 
     <>
     <div className="container col-3">
+      <h1>Login Barberia</h1>
 
     <form onSubmit={ingresar}>
   <div className="form-outline mb-4">
