@@ -2,7 +2,19 @@ import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import { useEffect } from "react";
 const Menu = () => {
-    const navigate = useNavigate()
+    let tipoUsuario = "user";
+    const navigate = useNavigate();
+    try {
+      JSON.parse(sessionStorage.getItem("roles")).forEach(element => {//Identificar si el usuario es admin
+        if(element.nombre==="ROLE_ADMIN"){
+          tipoUsuario="admin";
+        }
+      });
+    
+      
+    } catch (error) {
+      
+    }
 
       useEffect(()=>{
         if(sessionStorage.getItem("key")==null){
@@ -18,7 +30,12 @@ const Menu = () => {
 
     return ( <><nav className="navbar navbar-expand-lg navbar-light bg-light">
     <div className="container-fluid">
-      <Link className="navbar-brand" to="/clientes">Clientes</Link>
+      {tipoUsuario==="admin" ? ( //Si es usuario admin le muestra la opcion de clientes
+        <Link className="navbar-brand" to="/clientes">Clientes</Link>
+      ):(
+        ""
+      )}
+      
       <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span className="navbar-toggler-icon"></span>
       </button>

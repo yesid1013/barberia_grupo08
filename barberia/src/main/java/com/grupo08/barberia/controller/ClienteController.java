@@ -58,7 +58,7 @@ public class ClienteController {
     @GetMapping("/listar")
     public ResponseEntity<List<ClienteDTO>> findAll(@RequestHeader String user, @RequestHeader String key){
         try {
-            if (!clienteService.validarCredenciales(user, key)) {
+            if (!clienteService.validarUsuarioAdmin(user, key)) {
                    return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
                     
                 } else {
@@ -188,7 +188,8 @@ public class ClienteController {
     public ResponseEntity<Object> login(@RequestHeader String user,@RequestHeader String pwd){
         Cliente cliente = clienteService.login(user, Hash.sha1(pwd)); //Enviamos la contraseña encriptada ya que en la bd no esta plana
         if(cliente!=null){
-            return new ResponseEntity<>(new CredencialesDTO(cliente.getUsername(),Hash.sha1(Hash.sha1(pwd)+Hash.sha1(cliente.getUsername()))),HttpStatus.OK);//Mandamos la llave con contraseña y usuario juntas encriptadas 
+            ClienteDTO clienteDTO=((ClienteDTO) convertEntity.convert(cliente, new ClienteDTO()));
+            return new ResponseEntity<>(new CredencialesDTO(cliente.getUsername(),Hash.sha1(Hash.sha1(pwd)+Hash.sha1(cliente.getUsername())),clienteDTO.getRoles()),HttpStatus.OK);//Mandamos la llave con contraseña y usuario juntas encriptadas 
         }else{
             return new ResponseEntity<>(new Message(401,"Error de credenciales"),HttpStatus.UNAUTHORIZED);
         }

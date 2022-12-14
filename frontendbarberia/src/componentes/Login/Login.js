@@ -2,7 +2,9 @@ import axios from "axios"; //Libreria que nos permite consumir el backend
 import {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import swal from "sweetalert";
-const URL="http://localhost:8081/api/v1/cliente/login";
+import { API } from "../config/ApiUrl";
+
+const URL=API('login');
 
 
 const Login = () => {
@@ -25,6 +27,7 @@ const Login = () => {
             .then((value)=>{//Cuando le de ok a la ventana se guardara la sessionstorage con el usuario y la llave
               sessionStorage.setItem("user",login.data.user);
               sessionStorage.setItem("key",login.data.key);
+              sessionStorage.setItem("roles",JSON.stringify(login.data.roles));
               navigate("/menu");
 
             });
@@ -40,8 +43,8 @@ const Login = () => {
 
     return ( 
     <>
-    <div className="container col-3">
-      <h1>Login Barberia</h1>
+    <div className="container col-3 bg-dark text-white rounded" >
+      <h1 className="h1">Inicio de sesión</h1>
 
     <form onSubmit={ingresar}>
   <div className="form-outline mb-4">
@@ -72,8 +75,9 @@ const Login = () => {
       <a href="#!">Forgot password?</a>
     </div>
   </div>
+  <center><button type="submit" className="btn btn-primary btn-block mb-4">Sign in</button></center>
 
-  <button type="submit" className="btn btn-primary btn-block mb-4">Sign in</button>
+  
 
   
   <div className="text-center">

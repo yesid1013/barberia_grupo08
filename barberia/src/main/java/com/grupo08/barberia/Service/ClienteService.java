@@ -42,7 +42,6 @@ public class ClienteService {
         
         try {
             clieneRepository.findById(cliente.getId()).get();
-            cliente.setPassword(Hash.sha1(cliente.getPassword()));
             clieneRepository.save(cliente);
             return new Message(200, "Actualizado");
             

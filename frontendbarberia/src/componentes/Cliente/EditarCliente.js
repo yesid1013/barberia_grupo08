@@ -3,9 +3,10 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import swal from "sweetalert";
+import { API } from "../config/ApiUrl";
 
-const URL="http://localhost:8081/api/v1/cliente/actualizar";
-const URLF="http://localhost:8081/api/v1/cliente/list/"; //Endpoint de buscar cliente por id
+const URL=API('actualizar');
+const URLF=API('list/'); //Endpoint de buscar cliente por id
 
 const EditarCliente = () => {
     const [nombreCliente, setnombreCliente] = useState("");
@@ -16,9 +17,17 @@ const EditarCliente = () => {
     const {id}=useParams();
     let roles = document.getElementsByClassName("role");
 
+    const navigate = useNavigate();
+
     useEffect(()=>{ 
         buscarCliente();
-      },[])
+      },[]);
+
+      useEffect(()=>{
+        if(regresar!==0){
+          navigate('/clientes');
+        }
+      },[regresar]);
 
     const buscarCliente=async()=>{
         const cliente = await axios({
@@ -68,6 +77,7 @@ const EditarCliente = () => {
             console.log(insertarCliente.data);
             swal("Actualizado",insertarCliente.data.message,"success").then((value)=>{
                 setregresar(1);
+                
   
               });
         } catch (error) {
@@ -83,7 +93,7 @@ const EditarCliente = () => {
     return ( <>
     <Menu/>
     
-    <h2>Editar Cliente</h2>
+    <center><h2>Editar Cliente</h2></center> 
     <div className="container col-6">
         <form onSubmit={guardar}>
             <div className="mb-3">
@@ -117,8 +127,8 @@ const EditarCliente = () => {
                 <label className="form-check-label">Barber</label>{" "}
             </div>
 
-            <button type="submit" className="btn btn-outline-primary">Guardar</button>{" "}
-            <Link className="btn btn-outline-primary" to="/clientes">Regresar</Link>
+            <button type="submit" className="btn btn-outline-dark">Guardar</button>{" "}
+            <Link className="btn btn-outline-dark" to="/clientes">Regresar</Link>
             
         </form>
     </div>

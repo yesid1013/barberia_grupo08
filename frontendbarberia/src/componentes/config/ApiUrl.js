@@ -1,0 +1,1 @@
+export const API = path=>'http://localhost:8081/api/v1/cliente/'+path.toString(); //Ruta base

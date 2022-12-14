@@ -3,8 +3,9 @@ import {useState,useEffect} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import axios from "axios";
+import { API } from "../config/ApiUrl";
 
-const URL ="http://localhost:8081/api/v1/cliente/crear";
+const URL =API('crear');
 const CrearCliente = () => {
     const [nombreCliente, setnombreCliente] = useState("");
     const [apellidoCliente, setapellido_cliente] = useState("");
@@ -59,7 +60,7 @@ const CrearCliente = () => {
             swal("Guardado",insertarCliente.data.message,"success").then((value)=>{
                 setregresar(1);
   
-              });; 
+              });
         } catch (error) {
             //console.log(error.response.data.errors);
             swal("Error de datos",JSON.parse(error.request.response).errors[0].message,"error")
@@ -73,8 +74,8 @@ const CrearCliente = () => {
 
     return ( <>
     <Menu/>
-    <h2>Crear cliente</h2>
-    <div className="container col-6">
+    <center><h2>Crear cliente</h2></center>
+    <div className="container col-6 ">
         <form onSubmit={guardar}>
             <div className="mb-3">
                 <label className="form-label">Nombre de cliente</label>
@@ -107,8 +108,8 @@ const CrearCliente = () => {
                 <label className="form-check-label">Barber</label>{" "}
             </div>
 
-            <button type="submit" className="btn btn-outline-primary">Guardar</button>{" "}
-            <Link className="btn btn-outline-primary" to="/clientes">Regresar</Link>
+            <button type="submit" className="btn btn-outline-dark">Guardar</button>{" "}
+            <Link className="btn btn-outline-dark" to="/clientes">Regresar</Link>
             
         </form>
     </div>

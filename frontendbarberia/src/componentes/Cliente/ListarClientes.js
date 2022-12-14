@@ -3,18 +3,37 @@ import {useState,useEffect} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import swal from "sweetalert";
 import Menu from "../Menu/Menu";
-const URL="http://localhost:8081/api/v1/cliente/listar";
-const URLE= "http://localhost:8081/api/v1/cliente/eliminar/";
+import { API } from "../config/ApiUrl";
+
+const URL=API('listar');
+const URLE=API('eliminar/');
 
 
 const ListarClientes = () => {
     const navigate = useNavigate()
 
       useEffect(()=>{
-        if(sessionStorage.getItem("key")==null){
-          swal("Acceso no autoriazdo","Debe digitar credenciales","error"); 
-          navigate('/');
+        try {
+            let tipoUsuario = "user";
+            if(sessionStorage.getItem("key")==null){
+                swal("Acceso no autoriazdo","Debe digitar credenciales","error"); 
+                navigate('/');
+              }
+            //   JSON.parse(sessionStorage.getItem("roles")).forEach(element => {//Identificar si el usuario es admin
+            //     if(element.nombre==="ROLE_ADMIN"){
+            //       tipoUsuario="admin";
+            //     }
+            //   });
+            // if(tipoUsuario==="user"){
+            //     swal("Acceso no autoriazdo","Debe ser administrador","error"); 
+            //     navigate('/menu');
+            // }
+              
+            
+        } catch (error) {
+            
         }
+        
       },[]);
 
       
@@ -38,6 +57,12 @@ const ListarClientes = () => {
             setclientes(login.data)
             
         } catch (error) {
+            if(error.request.status==401){
+                swal("Acceso no autoriazdo","No tiene credenciales válidas","error"); 
+                navigate('/menu');
+            }
+
+            
             
         }
 
@@ -76,10 +101,10 @@ const ListarClientes = () => {
 
     return ( <>
     <Menu/>
-    <div className="container">
-    <Link className="btn btn-outline-success" to={'/crearCliente'}><i className="fa-solid fa-user-plus"></i></Link>
-        <table className="table">
-        <thead className="table-primary">
+    <div className="container ">
+    <Link className="btn btn-outline-success" to={'/crearCliente'}><i className="fa-solid fa-user-plus"></i></Link><br/><br/>
+        <table className="table table-striped table-dark">
+        <thead >
             <tr>
                 <th>Nombre</th>
                 <th>Apellido</th>
